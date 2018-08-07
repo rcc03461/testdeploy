@@ -32,13 +32,13 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //跨域问题处理(vue端使用了proxyTable下面的配置不用了额)
-// app.all('*', function (req, res, next) {
-//   res.header('Access-Control-Allow-Origin', "http://localhost:8081");
-//   res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH,OPTIONS');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   res.header('Access-Control-Allow-Credentials','true'); //告诉客户端可以在HTTP请求中带上Cookie
-//   next();
-// })
+app.all('*', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', "http://cre.yching.hk");
+  res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Credentials','true'); //告诉客户端可以在HTTP请求中带上Cookie
+  next();
+})
 
 app.use('/', index.router);
 
