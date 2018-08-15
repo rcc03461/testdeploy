@@ -7,6 +7,12 @@ model.findAll = function (option) {
   let _sql = "SELECT * FROM client LIMIT ? , ?"
   return query(_sql, [(option.page - 1) * option.limit, option.limit])
 }
+
+model.getAll = function (option) {
+  let _sql = "SELECT * FROM client"
+  return query(_sql, [])
+}
+
 model.findAllCount = function () {
   let _sql = "SELECT COUNT(id) as total FROM client"
   return query(_sql, [])

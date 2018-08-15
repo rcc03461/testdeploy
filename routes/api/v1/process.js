@@ -13,18 +13,20 @@ var controller = require('../../../controllers/index');
 router.use(userController.checkLogin);
 
 //返回集合
-router.get('/list', controller.getClientList);
-
-router.get('/option', controller.getClientOption);
+// router.get('/list', controller.getProductList);
 
 // //返回指定的book
 // router.get('/:id', bookController.findById);
+router.get('/get/:idproduct', controller.processGetProcess);
+// router.get('/get/:idproduct', ()=>{
+//     console.log('1111111')}
+// );
 
 //创建book
-router.post('/create', controller.clientCreate);
+// router.post('/create', controller.productCreate);
 
 // //更新book全部信息
-router.put('/update/:id', controller.clientUpdate);
+router.post('/update', controller.processUpdate);
 
 // //更新book部分信息
 // router.patch('/:id', bookController.patch);

@@ -24,6 +24,9 @@ router.patch('/changepwd', userController.changepwd);
 
 //返回user的集合
 router.get('/', userController.find);
+
+//create new user
+router.post('/', userController.create);
 //
 // //返回指定的user
 // router.get('/:id', userController.findById);

@@ -55,6 +55,24 @@ Controller.find = async function(req, res) {
   })
 };
 
+/**
+ * 检查用户的登录状态
+ * @param req
+ * @param res
+ * @param next
+ */
+Controller.getAll = async function(req, res) {
+  const rawData = await Model.getAll().then((e) => {
+    const response = _.map(e,(result)=>{
+      return {
+        value: result.id,
+        label: result.clientName
+      }
+    })
+    res.json(response)
+  });
+};
+
 Controller.create = async function(req, res) {
   // let name = req.body.name;
   // let author = req.body.author;

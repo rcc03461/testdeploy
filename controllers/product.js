@@ -4,7 +4,7 @@
  * Created by jerry on 2017/11/2.
  */
 
-const Model = require('../data/job');
+const Model = require('../data/product');
 // import dayjs from 'dayjs'
 // Or CommonJS
 var dayjs = require('dayjs');
@@ -31,7 +31,7 @@ Controller.find = async function(req, res) {
   });
   let list = JSON.parse(JSON.stringify(rawData));
   list.map(e => {
-    e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
+    // e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
     e.createAt = dayjs(e.createAt).format('YYYY-MM-DD');
     return e
   })
@@ -47,56 +47,45 @@ Controller.find = async function(req, res) {
   })
 };
 
-// Controller.getAll = async function (req, res) {
-//   const rawData = await Model.getAll().then((e) => {
-//     const response = _.map(e, (result) => {
-//       return {
-//         value: result.id,
-//         label: result.jobName
-//       }
-//     })
-//     res.json(response)
-//   });
-// };
+
+Controller.getAll = async function (req, res) {
+  const rawData = await Model.getAll().then((e) => {
+    const response = _.map(e, (result) => {
+      return {
+        value: result.id,
+        label: result.productName
+      }
+    })
+    res.json(response)
+  });
+};
+
 
 Controller.create = async function(req, res) {
-  // let name = req.body.name;
-  // let author = req.body.author;
-  // let description = req.body.description;
-  // let publishAt = req.body.publishAt;
-  // console.log(req.body.dealDate);
+
+  let idJob = req.body.idJob || '';
+  let createId = req.body.createId || '';
+  let productName = req.body.productName || '';
   
-  const rawData = await Model.add({
-    jobTitle: req.body.jobTitle,
-    noPerPackage: req.body.noPerPackage,
-    dealDate: req.body.dealDate || '',
-    deliverySchedule: req.body.deliverySchedule || '',
-    idClient: req.body.idClient || 0,
-    createId: req.body.createId || 0
+  const rawData = await Model.add(idJob, productName, createId).then((e)=>{
+    if (result.affectedRows) {
+      res.json({
+        "errcode": 0,
+        "errmsg": "新增成功"
+      })
+    } else {
+      res.json({
+        "errcode": 0,
+        "errmsg": "Add record Fails"
+      })
+    }
   });
 
-  // const rawData = await Model.add({
-  //   jobTitle: req.body.jobTitle,
-  //   noPerPackage: req.body.noPerPackage,
-  //   dealDate: req.body.dealDate || '',
-  //   deliverySchedule: req.body.deliverySchedule || ''
-  // });
-
-  const result = JSON.parse(JSON.stringify(rawData))
-  // console.log(JSON.parse(JSON.stringify(queryResult)));
-  if (result.affectedRows) {
-    res.json({
-      "errcode": 0,
-      "errmsg": "新增成功"
-    })
-  }else{
-    res.json({
-      "errcode": 0,
-      "errmsg": "Add record Fails"
-    })
-  }
-
 };
+
+
+
+
 
 Controller.update = async function(req, res) {
 

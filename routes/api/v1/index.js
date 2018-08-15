@@ -5,6 +5,23 @@ var router = express.Router();
 
 var indexRouter = {};
 
+// const connection = require('../../../db');
+// router.use(function (req, res, next) {
+//   connection.pool.getConnection(function(err, connection) {
+//     if (err) {
+//       res.json({
+//           "errcode": 40000,
+//           "errmsg": "Unable to connect to mysql server."
+//         });
+//     }else{
+//       next();
+//     }
+//   });
+// })
+
+// check db connection
+// router.use();
+
 //轮询当前目录下的子模块，并挨个加载其路由配置
 $fs.readdir(__dirname, function (err, files) {
   files.forEach(function (file) {

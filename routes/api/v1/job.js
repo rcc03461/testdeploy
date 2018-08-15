@@ -5,24 +5,26 @@
 var express = require('express');
 var router = express.Router();
 var indexRouter = {};
-// var userController = require('../../../controllers/user');
+var userController = require('../../../controllers/user');
 // var bookController = require('../../../controllers/book');
-var controller = require('../../../controllers/job');
+var controller = require('../../../controllers/index');
 
 //先检查登录
-// router.use(userController.checkLogin);
+router.use(userController.checkLogin);
 
 //返回集合
-router.get('/', controller.find);
+router.get('/list', controller.getJobList);
+
+router.get('/option', controller.getJobOption);
 
 // //返回指定的book
 // router.get('/:id', bookController.findById);
 
 //创建book
-router.post('/', controller.create);
+router.post('/create', controller.jobCreate);
 
 // //更新book全部信息
-router.put('/:id', controller.update);
+router.put('/update/:id', controller.jobUpdate);
 
 // //更新book部分信息
 // router.patch('/:id', bookController.patch);

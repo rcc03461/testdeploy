@@ -4,11 +4,11 @@ const model = {};
 
 // 
 model.findAll = function (option) {
-  let _sql = "SELECT * FROM job LIMIT ? , ?"
+  let _sql = "SELECT * FROM product LIMIT ? , ?"
   return query(_sql, [(option.page - 1) * option.limit, option.limit])
 }
 model.findAllCount = function () {
-  let _sql = "SELECT COUNT(id) as total FROM job"
+  let _sql = "SELECT COUNT(id) as total FROM product"
   return query(_sql, [])
 }
 
@@ -19,11 +19,11 @@ model.findAllCount = function () {
 //   obj.clientMail,: req.body.clientMail,
 //   obj.billingAddress,: req.body.billingAddress
 // }
-model.add = function (params) {
-  let _sql = `INSERT INTO job (jobTitle,  noPerPackage,  dealDate,  deliverySchedule, idClient, createId) VALUES( ? , ? , ? , ? ,? ,?)`;
+model.create = function (idJob, productName, createId) {
+  let _sql = `INSERT INTO job (idJob,  productName,  createId) VALUES( ? , ? , ?)`;
   console.log(params);
   
-  return query(_sql, [params.jobTitle, params.noPerPackage, params.dealDate, params.deliverySchedule, params.idClient, params.createId])
+  return query(_sql, [idJob, productName, createId])
 }
 
 // model.create = function (params) {

@@ -8,9 +8,12 @@ var multer = require('multer');
 var path = require('path');
 var router = express.Router();
 var indexRouter = {};
-// var userController = require('../../../controllers/user');
+var userController = require('../../../controllers/user');
 // var bookController = require('../../../controllers/book');
 var controller = require('../../../controllers/filemanger');
+
+//先检查登录
+router.use(userController.checkLogin);
 
 var createFolder = function (folder) {
   try {
