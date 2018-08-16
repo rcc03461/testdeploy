@@ -13,20 +13,20 @@ var controller = require('../../../controllers/index');
 router.use(userController.checkLogin);
 
 //返回集合
-router.get('/detail/:idjob', controller.getJobDetail);
+// router.get('/detail/:idjob', controller.getJobDetail);
 
-router.get('/list', controller.getJobList);
+router.post('/getdetail', controller.invoiceGetDetail);
 
-router.get('/option', controller.getJobOption);
+// router.get('/option', controller.getJobOption);
 
 // //返回指定的book
 // router.get('/:id', bookController.findById);
 
 //创建book
-router.post('/create', controller.jobCreate);
+// router.post('/create', controller.jobCreate);
 
 // //更新book全部信息
-router.put('/update/:id', controller.jobUpdate);
+// router.put('/update/:id', controller.jobUpdate);
 
 // //更新book部分信息
 // router.patch('/:id', bookController.patch);

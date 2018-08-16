@@ -35,6 +35,11 @@ model.clientUpdate = function (obj) {
 
 //------------------------------------------Job----------------
 
+model.getJobDetail = function (idjob) {
+  let _sql = "SELECT * FROM job WHERE id = ?"
+  return query(_sql, [idjob])
+}
+
 model.getJobList = function (option) {
   let _sql = "SELECT * FROM job LIMIT ? , ?"
   return query(_sql, [(option.page - 1) * option.limit, option.limit])
@@ -102,7 +107,7 @@ model.productUpdate = function (params) {
 
 
 //------------------------------------------Process----------------
-
+// ===========Print
 model.processPrintCreate = function (idProduct, option) {
   let _sql = `INSERT INTO detail_print (idProduct, printTitle, size, color, material, materialWeight, qtyClient, qtyPrint, pageCount, remark ) VALUES (?,?,?,?,?,?,?,?,?,?)`;
 
@@ -143,32 +148,196 @@ model.processPrintDelete = function (id) {
   return query(_sql, [id])
 }
 
-model.processGetPrint = function (idProduct) {
+model.processPrintGet = function (idProduct) {
+  console.log("processGetPrint idProduct: ", idProduct);
   let _sql = "SELECT * FROM detail_print WHERE idProduct = ? AND delected = 0"
   return query(_sql, [idProduct])
 }
 
-// model.getProductOption = function (option) {
-//   let _sql = "SELECT * FROM product"
-//   return query(_sql, [])
-// }
-
-// model.getProductAllCount = function () {
-//   let _sql = "SELECT COUNT(id) as total FROM product"
-//   return query(_sql, [])
-// }
-// model.productCreate = function (idJob, productName, createId) {
-//   let _sql = `INSERT INTO product (idJob, productName, createId) VALUES( ? , ? , ? )`;
-
-//   return query(_sql, [idJob, productName, createId])
-// }
-// model.productUpdate = function (params) {
-//   // return params
-//   let _sql = `UPDATE product SET idJob = ?, productName = ?, createId = ? WHERE id = ?`;
-//   return query(_sql, [params.idJob, params.productName, params.createId,params.id])
-// }
 
 
+
+
+// ==========Binding
+model.processBindingCreate = function (idProduct, option) {
+  let _sql = `INSERT INTO detail_binding (idProduct, bindingTitle, binding, pagination ) VALUES (?,?,?,?)`;
+  console.log("processBindingCreate :", idProduct, option);
+  return query(_sql, [
+    idProduct,
+    option.bindingTitle,
+    option.binding,
+    option.pagination
+  ])
+}
+
+model.processBindingUpdate = function (id, params) {
+  let _sql = "UPDATE detail_binding SET bindingTitle = ?, binding = ?, pagination = ? WHERE id = ? "
+  return query(_sql, [
+    params.bindingTitle,
+    params.binding,
+    params.pagination,
+    id
+  ])
+}
+
+model.processBindingDelete = function (id) {
+  let _sql = "UPDATE detail_binding SET delected = 1 WHERE id = ? "
+  return query(_sql, [id])
+}
+
+model.processBindingGet = function (idProduct) {
+  let _sql = "SELECT * FROM detail_binding WHERE idProduct = ? AND delected = 0"
+  return query(_sql, [idProduct])
+}
+
+
+
+// ==========Finishing
+model.processFinishingCreate = function (idProduct, option) {
+  let _sql = `INSERT INTO detail_finishing (idProduct, finishingTitle ) VALUES (?,?)`;
+  console.log("processFinishingCreate :", idProduct, option);
+  return query(_sql, [
+    idProduct,
+    option.finishingTitle
+  ])
+}
+
+model.processFinishingUpdate = function (id, params) {
+  let _sql = "UPDATE detail_finishing SET finishingTitle = ? WHERE id = ? "
+  return query(_sql, [
+    params.finishingTitle,
+    id
+  ])
+}
+
+model.processFinishingDelete = function (id) {
+  let _sql = "UPDATE detail_finishing SET delected = 1 WHERE id = ? "
+  return query(_sql, [id])
+}
+
+model.processFinishingGet = function (idProduct) {
+  let _sql = "SELECT * FROM detail_finishing WHERE idProduct = ? AND delected = 0"
+  return query(_sql, [idProduct])
+}
+
+
+// ==========Package
+model.processPackageCreate = function (idProduct, option) {
+  let _sql = `INSERT INTO detail_package (idProduct, packageTitle, packageNo, unitPrice ) VALUES (?,?,?,?)`;
+  console.log("processPackageCreate :", idProduct, option);
+  return query(_sql, [
+    idProduct,
+    option.packageTitle,
+    option.packageNo,
+    option.unitPrice
+  ])
+}
+
+model.processPackageUpdate = function (id, params) {
+  let _sql = "UPDATE detail_package SET packageTitle = ?,packageNo = ?,unitPrice = ? WHERE id = ? "
+  return query(_sql, [
+    params.packageTitle,
+    params.packageNo,
+    params.unitPrice,
+    id
+  ])
+}
+
+model.processPackageDelete = function (id) {
+  let _sql = "UPDATE detail_package SET delected = 1 WHERE id = ? "
+  return query(_sql, [id])
+}
+
+model.processPackageGet = function (idProduct) {
+  let _sql = "SELECT * FROM detail_package WHERE idProduct = ? AND delected = 0"
+  return query(_sql, [idProduct])
+}
+
+
+
+// ==========Delivery
+model.processDeliveryCreate = function (idProduct, option) {
+  let _sql = `INSERT INTO detail_delivery (idProduct, address, deliveryQty, deliveryDate ) VALUES (?,?,?,?)`;
+  console.log("processDeliveryCreate :", idProduct, option);
+  return query(_sql, [
+    idProduct,
+    option.address,
+    option.deliveryQty,
+    option.deliveryDate
+  ])
+}
+
+model.processDeliveryUpdate = function (id, params) {
+  let _sql = "UPDATE detail_delivery SET address = ?,deliveryQty = ?,deliveryDate = ? WHERE id = ? "
+  return query(_sql, [
+    params.address,
+    params.deliveryQty,
+    params.deliveryDate,
+    id
+  ])
+}
+
+model.processDeliveryDelete = function (id) {
+  let _sql = "UPDATE detail_delivery SET delected = 1 WHERE id = ? "
+  return query(_sql, [id])
+}
+
+model.processDeliveryGet = function (idProduct) {
+  let _sql = "SELECT * FROM detail_delivery WHERE idProduct = ? AND delected = 0"
+  return query(_sql, [idProduct])
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==========Other
+model.processOtherCreate = function (idProduct, option) {
+  let _sql = `INSERT INTO detail_other (idProduct, otherTitle ) VALUES (?,?)`;
+  console.log("processOtherCreate :", idProduct, option);
+  return query(_sql, [
+    idProduct,
+    option.otherTitle
+  ])
+}
+
+model.processOtherUpdate = function (id, params) {
+  let _sql = "UPDATE detail_other SET otherTitle = ? WHERE id = ? "
+  return query(_sql, [
+    params.otherTitle,
+    id
+  ])
+}
+
+model.processOtherDelete = function (id) {
+  let _sql = "UPDATE detail_other SET delected = 1 WHERE id = ? "
+  return query(_sql, [id])
+}
+
+model.processOtherGet = function (idProduct) {
+  let _sql = "SELECT * FROM detail_other WHERE idProduct = ? AND delected = 0"
+  return query(_sql, [idProduct])
+}
+
+
+
+
+
+
+
+//=====================invoice
+model.invoiceGetDetail = function (option) {
+  let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0`
+  return query(_sql, [option.idjob])
+}
 
 
 
