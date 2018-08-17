@@ -335,7 +335,7 @@ model.processOtherGet = function (idProduct) {
 
 //=====================invoice
 model.invoiceGetDetail = function (option) {
-  let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0`
+  let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0 AND product.id IN `
   return query(_sql, [option.idjob])
 }
 

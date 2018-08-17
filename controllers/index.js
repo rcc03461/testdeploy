@@ -21,28 +21,13 @@ Controller.invoiceGetDetail = async function (req, res) {
   // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
   let option = req.body;
   // console.log("invoice :::::", req.body);
-  
-  await Model.invoiceGetDetail(option).then(list => {
-
-  //   // await Model.getClientAllCount().then((total)=>{
-      res.json(list)
-      // res.json([{
-      //   'productName':1,
-      //   'deliverySchedule':1,
-      //   'jobTitle':1,
-      // }, {
-      //   'productName': 2,
-      //   'deliverySchedule': 2,
-      //   'jobTitle': 2,
-      // }])
-  //   // });
-  // }).catch(err=>{
-  //   res.json({
-  //       "errcode": 40009,
-  //       "errmsg": "Fails to get client list"
-  //   })
+  const products = await Model.invoiceGetDetail(option).then(list => {
+      return list
   });
 
+
+  
+  res.json(products)
 };
 
 Controller.getClientList = async function (req, res) {
