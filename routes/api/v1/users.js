@@ -8,16 +8,16 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var router = express();
-const corsOptions = {
-  origin: 'http://104.155.212.227',
-  credentials: true
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-};
-router.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: 'http://104.155.212.227',
+//   credentials: true
+// //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+// //   allowedHeaders: ['Content-Type', 'Authorization'],
+// };
+// router.use(cors(corsOptions));
 
-// router.use(bodyParser.urlencoded({ extended: true }));
-// router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
 var indexRouter = {};
 var userController = require('../../../controllers/user');
 
