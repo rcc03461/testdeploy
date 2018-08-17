@@ -6,9 +6,9 @@ var cors = require('cors');
 var router = express.Router();
 const corsOptions = {
   origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
-  credentials: true,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+  // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  // allowedHeaders: ['Content-Type', 'Authorization'],
 };
 router.use(cors(corsOptions));
 // router.use(bodyParser.json());
