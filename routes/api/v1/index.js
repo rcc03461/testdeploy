@@ -2,10 +2,10 @@
 // var _ = require('lodash');
 var express = require('express');
 var cors = require('cors');
-var bodyParser = require('body-parser');
+// var bodyParser = require('body-parser');
 var router = express();
 const corsOptions = {
-  origin: 'http://104.155.212.227',
+  origin: '*',
   credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -37,6 +37,12 @@ var userController = require('../../../controllers/user');
 
 //用户登录
 router.post('/users/login', userController.login);
+router.post('/users/login2', function(req, res){
+  res.json({"msg":"why"})
+});
+router.get('/users/login3', function(req, res){
+  res.json({"msg":"why"})
+});
 
 
 
