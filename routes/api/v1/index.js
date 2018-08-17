@@ -45,10 +45,10 @@ var indexRouter = {};
 var userController = require('../../../controllers/user');
 var controller = require('../../../controllers/index');
 
-router.post('/users/login', userController.login)
-.get('/users/logout', userController.logout);
+router.post('/users/login', userController.login);
+router.get('/users/logout', userController.logout);
 //先检查登录
-router.use(userController.checkLogin);
+// router.use(userController.checkLogin);
 router.patch('/users/profile', userController.profile);
 router.patch('/users/changepwd', userController.changepwd);
 router.get('/users/', userController.find);
