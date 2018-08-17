@@ -35,9 +35,9 @@ router.patch('/profile', userController.profile);
 router.patch('/changepwd', userController.changepwd);
 
 //返回user的集合
-router.get('/', function(req, res){
-  res.json({"msg":"diu"})
-});
+// router.get('/', function(req, res){
+//   res.json({"msg":"diu"})
+// });
 // router.get('/', userController.find);
 
 //create new user
