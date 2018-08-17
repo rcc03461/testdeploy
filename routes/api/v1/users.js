@@ -9,10 +9,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var router = express();
 const corsOptions = {
-  origin: [
-    'http://104.155.212.227',
-    'http://localhost:8081',
-  ],
+  origin: 'http://104.155.212.227',
   credentials: true
 //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 //   allowedHeaders: ['Content-Type', 'Authorization'],
