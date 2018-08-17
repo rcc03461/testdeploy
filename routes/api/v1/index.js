@@ -3,12 +3,20 @@
 var express = require('express');
 var cors = require('cors');
 // var bodyParser = require('body-parser');
-var router = express.Router();
+var router = express();
+var whitelist = ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'];
 const corsOptions = {
-  origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
-  credentials: false,
-  // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  // allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    // origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
+  credentials: true,
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 router.use(cors(corsOptions));
 // router.use(bodyParser.json());
@@ -45,24 +53,18 @@ router.get('/users/login3', function(req, res){
 });
 
 
-
-
-
-
-
-
 //轮询当前目录下的子模块，并挨个加载其路由配置
-// $fs.readdir(__dirname, function (err, files) {
-//   files.forEach(function (file) {
-//     if (!_.startsWith(file, '.') && file !== 'index.js') {
-//       try {
-//         router.use('/' + file.replace('.js', ''), require('./' + file).router);
-//       } catch (ex) {
-//         console.error('路由加载错误[' + $path.join(__dirname, file) + ']：' + ex.stack);
-//       }
-//     }
-//   });
-// });
+$fs.readdir(__dirname, function (err, files) {
+  files.forEach(function (file) {
+    if (!_.startsWith(file, '.') && file !== 'index.js') {
+      try {
+        router.use('/' + file.replace('.js', ''), require('./' + file).router);
+      } catch (ex) {
+        console.error('路由加载错误[' + $path.join(__dirname, file) + ']：' + ex.stack);
+      }
+    }
+  });
+});
 
 indexRouter.router = router;
 module.exports = indexRouter;
