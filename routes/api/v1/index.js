@@ -1,22 +1,23 @@
 // var fs = require('fs');
 // var _ = require('lodash');
 var express = require('express');
-var cors = require('cors');
 // var bodyParser = require('body-parser');
 var router = express();
+
+var cors = require('cors');
 var whitelist = ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'];
 const corsOptions = {
-    origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
-    // origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
+  // origin: function (origin, callback) {
+  //   if (whitelist.indexOf(origin) !== -1) {
+  //     callback(null, true)
+  //   } else {
+  //     callback(new Error('Not allowed by CORS'))
+  //   }
+  // },
+  origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
   credentials: true,
   methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // allowedHeaders: ['Content-Type', 'Authorization'],
 };
 router.use(cors(corsOptions));
 // router.use(bodyParser.json());
@@ -42,29 +43,56 @@ var indexRouter = {};
 
 
 var userController = require('../../../controllers/user');
+var controller = require('../../../controllers/index');
 
-//用户登录
-router.post('/users/login', userController.login);
-router.post('/users/login2', function(req, res){
-  res.json({"msg":"why"})
-});
-router.get('/users/login3', function(req, res){
-  res.json({"msg":"why"})
-});
+router.post('/users/login', userController.login)
+.get('/users/logout', userController.logout);
+//先检查登录
+router.use(userController.checkLogin);
+router.patch('/users/profile', userController.profile);
+router.patch('/users/changepwd', userController.changepwd);
+router.get('/users/', userController.find);
+router.post('/users/', userController.create);
+
+
+// client
+router.get('/client/list', controller.getClientList);
+router.get('/client/option', controller.getClientOption);
+router.post('/client/create', controller.clientCreate);
+router.put('/client/update/:id', controller.clientUpdate);
+router.get('/client/detail/:idjob', controller.getJobDetail);
+// job
+router.get('/job/list', controller.getJobList);
+router.get('/job/option', controller.getJobOption);
+router.post('/job/create', controller.jobCreate);
+router.put('/job/update/:id', controller.jobUpdate);
+// process
+router.get('/process/get/:idproduct', controller.processGetProcess);
+router.post('/process/update', controller.processUpdate);
+// product
+router.get('/product/list', controller.getProductList);
+router.post('/product/create', controller.productCreate);
+router.put('/product/update/:id', controller.productUpdate);
+
+router.post('/invoice/getdetail', controller.invoiceGetDetail);
+
+
+
+
 
 
 //轮询当前目录下的子模块，并挨个加载其路由配置
-$fs.readdir(__dirname, function (err, files) {
-  files.forEach(function (file) {
-    if (!_.startsWith(file, '.') && file !== 'index.js') {
-      try {
-        router.use('/' + file.replace('.js', ''), require('./' + file).router);
-      } catch (ex) {
-        console.error('路由加载错误[' + $path.join(__dirname, file) + ']：' + ex.stack);
-      }
-    }
-  });
-});
+// $fs.readdir(__dirname, function (err, files) {
+//   files.forEach(function (file) {
+//     if (!_.startsWith(file, '.') && file !== 'index.js') {
+//       try {
+//         router.use('/' + file.replace('.js', ''), require('./' + file).router);
+//       } catch (ex) {
+//         console.error('路由加载错误[' + $path.join(__dirname, file) + ']：' + ex.stack);
+//       }
+//     }
+//   });
+// });
 
 indexRouter.router = router;
 module.exports = indexRouter;

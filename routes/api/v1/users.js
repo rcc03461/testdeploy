@@ -38,7 +38,7 @@ router.patch('/changepwd', userController.changepwd);
 // router.get('/', function(req, res){
 //   res.json({"msg":"diu"})
 // });
-// router.get('/', userController.find);
+router.get('/', userController.find);
 
 //create new user
 router.post('/', userController.create);
