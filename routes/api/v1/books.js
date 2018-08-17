@@ -3,7 +3,9 @@
  * 采用 restful api 风格
  */
 var express = require('express');
-var router = express.Router();
+var bodyParser = require('body-parser');
+var router = express();
+router.use(bodyParser.json());
 var indexRouter = {};
 var userController = require('../../../controllers/user');
 var bookController = require('../../../controllers/book');
