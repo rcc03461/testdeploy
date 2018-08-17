@@ -5,8 +5,10 @@
  */
 
 var express = require('express');
+var cors = require('cors')
 var bodyParser = require('body-parser');
 var router = express();
+router.use(cors());
 router.use(bodyParser.json());
 var indexRouter = {};
 var userController = require('../../../controllers/user');
