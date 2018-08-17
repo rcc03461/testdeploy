@@ -15,7 +15,9 @@ const corsOptions = {
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 router.use(cors(corsOptions));
-router.use(bodyParser.json());
+
+// router.use(bodyParser.urlencoded({ extended: true }));
+// router.use(bodyParser.json());
 var indexRouter = {};
 var userController = require('../../../controllers/user');
 
