@@ -4,18 +4,16 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var router = express();
-
 const corsOptions = {
   origin: [
     'http://104.155.212.227',
     'http://localhost:8081',
   ],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  // allowedHeaders: ['Content-Type', 'Authorization'],
 };
 router.use(cors(corsOptions));
 router.use(bodyParser.json());
-
 var indexRouter = {};
 
 // const connection = require('../../../db');
