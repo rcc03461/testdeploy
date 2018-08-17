@@ -13,6 +13,7 @@ const corsOptions = {
     'http://104.155.212.227',
     'http://localhost:8081',
   ],
+  credentials: true
 //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 };

@@ -11,6 +11,7 @@ const corsOptions = {
   ],
   // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   // allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 router.use(cors(corsOptions));
 router.use(bodyParser.json());
