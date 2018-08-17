@@ -1,10 +1,19 @@
 // var fs = require('fs');
 // var _ = require('lodash');
 var express = require('express');
-var cors = require('cors')
+var cors = require('cors');
 var bodyParser = require('body-parser');
 var router = express();
-router.use(cors());
+
+const corsOptions = {
+  origin: [
+    'http://104.155.212.227',
+    'http://localhost:8081',
+  ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+router.use(cors(corsOptions));
 router.use(bodyParser.json());
 
 var indexRouter = {};
