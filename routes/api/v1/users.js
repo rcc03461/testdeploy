@@ -5,9 +5,9 @@
  */
 
 var express = require('express');
-var cors = require('cors');
 var bodyParser = require('body-parser');
 var router = express();
+var cors = require('cors');
 const corsOptions = {
   origin: 'http://104.155.212.227',
   credentials: true,
@@ -35,7 +35,10 @@ router.patch('/profile', userController.profile);
 router.patch('/changepwd', userController.changepwd);
 
 //返回user的集合
-router.get('/', userController.find);
+router.get('/', function(req, res){
+  res.json({"msg":"diu"})
+});
+// router.get('/', userController.find);
 
 //create new user
 router.post('/', userController.create);
