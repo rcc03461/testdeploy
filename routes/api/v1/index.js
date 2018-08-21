@@ -40,8 +40,6 @@ var indexRouter = {};
 // check db connection
 // router.use();
 
-
-
 var userController = require('../../../controllers/user');
 var controller = require('../../../controllers/index');
 
@@ -54,7 +52,6 @@ router.patch('/users/changepwd', userController.changepwd);
 router.get('/users/', userController.find);
 router.post('/users/', userController.create);
 
-
 // client
 router.get('/client/list', controller.getClientList);
 router.get('/client/option', controller.getClientOption);
@@ -62,20 +59,21 @@ router.post('/client/create', controller.clientCreate);
 router.put('/client/update/:id', controller.clientUpdate);
 router.get('/client/detail/:idjob', controller.getJobDetail);
 // job
+router.get('/job/detail/:idjob', controller.getJobDetail);
 router.get('/job/list', controller.getJobList);
 router.get('/job/option', controller.getJobOption);
 router.post('/job/create', controller.jobCreate);
 router.put('/job/update/:id', controller.jobUpdate);
-// process
-router.get('/process/get/:idproduct', controller.processGetProcess);
-router.post('/process/update', controller.processUpdate);
 // product
+router.get('/product/detail/:id', controller.getProductDetail);
 router.get('/product/list', controller.getProductList);
 router.post('/product/create', controller.productCreate);
 router.put('/product/update/:id', controller.productUpdate);
-
+// process
+router.get('/process/get/:idproduct', controller.processGetProcess);
+router.post('/process/update', controller.processUpdate);
+// invoice
 router.post('/invoice/getdetail', controller.invoiceGetDetail);
-
 
 
 

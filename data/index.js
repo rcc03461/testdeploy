@@ -36,12 +36,14 @@ model.clientUpdate = function (obj) {
 //------------------------------------------Job----------------
 
 model.getJobDetail = function (idjob) {
-  let _sql = "SELECT * FROM job WHERE id = ?"
+  console.log("getJobDetail : ", idjob);
+  
+  let _sql = "SELECT * FROM job LEFT JOIN default_job ON default_job.idJob = job.id WHERE job.id = ?"
   return query(_sql, [idjob])
 }
 
 model.getJobList = function (option) {
-  let _sql = "SELECT * FROM job LIMIT ? , ?"
+  let _sql = "SELECT * FROM job  LEFT JOIN default_job ON idJob = job.id LIMIT ? , ?"
   return query(_sql, [(option.page - 1) * option.limit, option.limit])
 }
 
@@ -66,15 +68,76 @@ model.jobUpdate = function (params) {
   return query(_sql, [params.jobTitle, params.noPerPackage, params.dealDate, params.deliverySchedule, params.id])
 }
 
+model.jobAddDefaultSetting = function (params) {
+
+  let _sql = `INSERT INTO default_job (
+    idJob,size,color,material,materialWeight,qty,pageCount,binding,pagination,unitPrice,amount,sample,finishing,specialInstruction) VALUES( 
+      ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )
+    `;
+  console.log(params);
+
+  return query(_sql, [
+    params.idJob,
+    params.size,
+    params.color,
+    params.material,
+    params.materialWeight,
+    params.qty,
+    params.pageCount,
+    params.binding,
+    params.pagination,
+    params.unitPrice,
+    params.amount,
+    params.sample,
+    params.finishing,
+    params.specialInstruction
+  ])
+}
+
+model.jobEditDefaultSetting = function (params) {
+
+  let _sql = `UPDATE default_job SET size = ? ,color = ? ,material = ? ,materialWeight = ? ,qty = ? ,pageCount = ? ,binding = ? ,pagination = ? ,unitPrice = ? ,amount = ? ,sample = ? ,finishing = ? ,specialInstruction = ? WHERE idDefaultJob = ?`;
+  console.log(params);
+
+  return query(_sql, [
+    params.size,
+    params.color,
+    params.material,
+    params.materialWeight,
+    params.qty,
+    params.pageCount,
+    params.binding,
+    params.pagination,
+    params.unitPrice,
+    params.amount,
+    params.sample,
+    params.finishing || null,
+    params.specialInstruction,
+    params.idDefaultJob
+  ])
+}
+// model.jobUpdate = function (params) {
+//   // return params
+//   let _sql = `UPDATE job SET jobTitle = ?, noPerPackage = ?, dealDate = ?, deliverySchedule = ? WHERE id = ?`;
+//   return query(_sql, [params.jobTitle, params.noPerPackage, params.dealDate, params.deliverySchedule, params.id])
+// }
+
 
 //------------------------------------------Product----------------
 
+model.getProductDetail = function (idproduct) {
+    let _sql = "SELECT * FROM product LEFT JOIN default_product ON default_product.idProduct = product.id WHERE product.id = ?"
+    return query(_sql, [idproduct])
+}
+
 model.getProductList = function (option) {
+  console.log("getProductList : ", option);
+  
   if (option.idjob) {
-    let _sql = "SELECT * FROM product WHERE idjob = ? LIMIT ? , ?"
+    let _sql = "SELECT * FROM product LEFT JOIN default_product ON default_product.idProduct = product.id WHERE product.idJob = ? LIMIT ? , ?"
     return query(_sql, [option.idjob, (option.page - 1) * option.limit, option.limit])
   }else{
-    let _sql = "SELECT * FROM product LIMIT ? , ?"
+    let _sql = "SELECT * FROM product LEFT JOIN default_product ON default_product.idProduct = product.id LIMIT ? , ?"
     return query(_sql, [(option.page - 1) * option.limit, option.limit])
   }
 }
@@ -100,11 +163,57 @@ model.productCreate = function (idJob, productName, createId) {
 }
 model.productUpdate = function (params) {
   // return params
-  let _sql = `UPDATE product SET idJob = ?, productName = ?, createId = ? WHERE id = ?`;
-  return query(_sql, [params.idJob, params.productName, params.createId,params.id])
+  let _sql = `UPDATE product SET idJob = ?, productName = ? WHERE id = ?`;
+  return query(_sql, [params.idJob, params.productName, params.id])
 }
 
+model.productAddDefaultSetting = function (params) {
 
+  let _sql = `INSERT INTO default_product (
+    idProduct, size, color, material, materialWeight, qty, pageCount, binding, pagination, unitPrice, amount, sample, finishing, specialInstruction) VALUES(
+      ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) `;
+  console.log(params);
+
+  return query(_sql, [
+    params.idProduct,
+    params.size,
+    params.color,
+    params.material,
+    params.materialWeight,
+    params.qty,
+    params.pageCount,
+    params.binding,
+    params.pagination,
+    params.unitPrice,
+    params.amount,
+    params.sample,
+    params.finishing,
+    params.specialInstruction
+  ])
+}
+
+model.productEditDefaultSetting = function (params) {
+
+  let _sql = `UPDATE default_product SET size = ? ,color = ? ,material = ? ,materialWeight = ? ,qty = ? ,pageCount = ? ,binding = ? ,pagination = ? ,unitPrice = ? ,amount = ? ,sample = ? ,finishing = ? ,specialInstruction = ? WHERE idDefaultProduct = ?`;
+  console.log(params);
+
+  return query(_sql, [
+    params.size,
+    params.color,
+    params.material,
+    params.materialWeight,
+    params.qty,
+    params.pageCount,
+    params.binding,
+    params.pagination,
+    params.unitPrice,
+    params.amount,
+    params.sample,
+    params.finishing || null,
+    params.specialInstruction,
+    params.idDefaultProduct
+  ])
+}
 
 //------------------------------------------Process----------------
 // ===========Print
@@ -335,8 +444,11 @@ model.processOtherGet = function (idProduct) {
 
 //=====================invoice
 model.invoiceGetDetail = function (option) {
-  let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0 AND product.id IN `
-  return query(_sql, [option.idjob])
+  // let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0 AND product.id IN (${"?,".repeat(option.products.length).replace(/,(\s+)?$/, '')})`
+  let _sql = `SELECT * FROM job LEFT JOIN product ON product.idJob = job.id WHERE job.id = ? AND product.delected = 0 AND product.id IN (?)`
+
+  // console.log(_.merge([option.idjob], option.products),  option.products.join());
+  return query(_sql, [option.idjob, option.products])
 }
 
 

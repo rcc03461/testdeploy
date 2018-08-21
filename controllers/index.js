@@ -20,14 +20,16 @@ Controller.invoiceGetDetail = async function (req, res) {
   // let page = parseInt(req.query.page || 1); //页码（默认第1页）
   // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
   let option = req.body;
-  // console.log("invoice :::::", req.body);
+  console.log("invoice :::::", req.body);
   const products = await Model.invoiceGetDetail(option).then(list => {
-      return list
+      // return list
+      console.log(list);
+      
+      res.json(list)
   });
 
 
   
-  res.json(products)
 };
 
 Controller.getClientList = async function (req, res) {
@@ -196,14 +198,42 @@ Controller.getJobOption = async function (req, res) {
 
 Controller.jobCreate = async function (req, res) {
 
-  const rawData = await Model.jobCreate({
+  console.log("jobCreate ", req.body);
+
+  // res.json({
+  //   "errcode": 40009,
+  //   "errmsg": "处理失败"
+  // })
+  await Model.jobCreate({
     jobTitle: req.body.jobTitle || '',
     noPerPackage: req.body.noPerPackage || '',
     dealDate: req.body.dealDate || '',
     deliverySchedule: req.body.deliverySchedule || '',
     idClient: req.body.idClient || 0,
     createId: req.body.createId || 0
-  }).then(result => {
+  }).then(async result => {
+
+    console.log("jobCreate resule : ", result.insertId);
+    
+    await Model.jobAddDefaultSetting({
+            idJob: result.insertId,
+            size: req.body.size || null,
+            color: req.body.color || null,
+            material: req.body.material || null,
+            materialWeight: req.body.materialWeight || null,
+            qty: req.body.qty || null,
+            pageCount: req.body.pageCount || null,
+            binding: req.body.binding || null,
+            pagination: req.body.pagination || null,
+            unitPrice: req.body.unitPrice || null,
+            amount: req.body.amount || null,
+            sample: req.body.sample || null,
+            finishing: req.body.finishing || null,
+            specialInstruction: req.body.specialInstruction || null
+    }).then(setting=>{
+      console.log("affectedRows :", setting.affectedRows);
+    })
+
     if (result.affectedRows) {
       res.json({
         "errcode": 0,
@@ -220,7 +250,12 @@ Controller.jobCreate = async function (req, res) {
 };
 
 Controller.jobUpdate = async function (req, res) {
+  // console.log("jobUpdate id:", req.params.id, req.body.jobTitle);
+  
+
   let id = _.trim(req.params.id || '');
+  console.log(id);
+  
   if (!id) {
     return res.json({
       "errcode": 40002,
@@ -229,11 +264,33 @@ Controller.jobUpdate = async function (req, res) {
   }
   await Model.jobUpdate({
     jobTitle: req.body.jobTitle,
-    noPerPackage: req.body.noPerPackage,
-    dealDate: req.body.dealDate || '',
-    deliverySchedule: req.body.deliverySchedule || '',
+    noPerPackage: req.body.noPerPackage || null,
+    dealDate: req.body.dealDate || null,
+    deliverySchedule: req.body.deliverySchedule || null,
     id: id
-  }).then(result => {
+  }).then(async result => {
+
+    console.log("jobUpdate data:::", req.body);
+      
+    await Model.jobEditDefaultSetting({
+      idDefaultJob: req.body.idDefaultJob,
+      size: req.body.size || null,
+      color: req.body.color || null,
+      material: req.body.material || null,
+      materialWeight: req.body.materialWeight || null,
+      qty: req.body.qty || null,
+      pageCount: req.body.pageCount || null,
+      binding: req.body.binding || null,
+      pagination: req.body.pagination || null,
+      unitPrice: req.body.unitPrice || null,
+      amount: req.body.amount || null,
+      sample: req.body.sample || null,
+      finishing: req.body.finishing || null,
+      specialInstruction: req.body.specialInstruction || null
+    }).then(setting => {
+      console.log("affectedRows :", setting.affectedRows);
+    })
+
     if (result.affectedRows >= 1) {
       res.json({
         "errcode": 0,
@@ -251,6 +308,14 @@ Controller.jobUpdate = async function (req, res) {
 
 // =========================== Product ====================
 
+Controller.getProductDetail = async function (req, res) {
+  let id = parseInt(req.params.id || 0);
+  await Model.getProductDetail(id).then(rawData => {
+      res.json(rawData[0])
+  })
+
+};
+
 Controller.getProductList = async function (req, res) {
   let idjob = parseInt(req.query.idjob || 0); //页码（默认第1页）
   let page = parseInt(req.query.page || 1); //页码（默认第1页）
@@ -265,6 +330,8 @@ Controller.getProductList = async function (req, res) {
   
   await Model.getProductList(option).then(async (rawData) => {
 
+    console.log("getProductList : ", rawData);
+    
     let list = rawData.map(e => {
       e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
       e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
@@ -290,9 +357,37 @@ Controller.productCreate = async function (req, res) {
   let createId = req.body.createId || '';
   let productName = req.body.productName || '';
 
-  console.log("productCreate ::: ", req.body);
+  // console.log("productCreate ::: ", req.body);
+  // res.json({
+  //   "errcode": 40009,
+  //   "errmsg": "处理失败"
+  // })
+
+  console.log("productCreate data::", req.body);
   
-  await Model.productCreate(idJob, productName, createId).then(result => {
+
+  await Model.productCreate(idJob, productName, createId).then(async result => {
+
+    await Model.productAddDefaultSetting({
+      idProduct: result.insertId,
+      size: req.body.size || null,
+      color: req.body.color || null,
+      material: req.body.material || null,
+      materialWeight: req.body.materialWeight || null,
+      qty: req.body.qty || null,
+      pageCount: req.body.pageCount || null,
+      binding: req.body.binding || null,
+      pagination: req.body.pagination || null,
+      unitPrice: req.body.unitPrice || null,
+      amount: req.body.amount || null,
+      sample: req.body.sample || null,
+      finishing: req.body.finishing || null,
+      specialInstruction: req.body.specialInstruction || null
+    }).then(setting=>{
+      console.log(" productAddDefaultSetting : ", setting.affectedRows);
+    })
+
+
     if (result.affectedRows) {
       res.json({
         "errcode": 0,
@@ -309,7 +404,61 @@ Controller.productCreate = async function (req, res) {
 };
 
 Controller.productUpdate = async function (req, res) {
-  console.log(req.body);
+
+  let id = _.trim(req.params.id || '');
+  console.log("productUpdate ", id);
+
+  if (!id) {
+    return res.json({
+      "errcode": 40002,
+      "errmsg": "不合法的参数"
+    });
+  }
+  console.log("productUpdate ", req.body);
+  
+  await Model.productUpdate({
+    idJob: req.body.idJob,
+    productName: req.body.productName,
+    // noPerPackage: req.body.noPerPackage || null,
+    // dealDate: req.body.dealDate || null,
+    // deliverySchedule: req.body.deliverySchedule || null,
+    id: id
+  }).then(async result => {
+
+  //   console.log("productUpdate data:::", req.body);
+
+    await Model.productEditDefaultSetting({
+      idDefaultProduct: req.body.idDefaultProduct,
+      size: req.body.size || null,
+      color: req.body.color || null,
+      material: req.body.material || null,
+      materialWeight: req.body.materialWeight || null,
+      qty: Number(req.body.qty) || null,
+      pageCount: req.body.pageCount || null,
+      binding: req.body.binding || null,
+      pagination: req.body.pagination || null,
+      unitPrice: Number(req.body.unitPrice) || null,
+      amount: Number(req.body.amount) || null,
+      sample: req.body.sample || null,
+      finishing: req.body.finishing || null,
+      specialInstruction: req.body.specialInstruction || null
+    }).then(setting => {
+      console.log("affectedRows :", setting.affectedRows);
+    })
+
+    if (result.affectedRows >= 1) {
+      res.json({
+        "errcode": 0,
+        "errmsg": "修改成功"
+      });
+    } else {
+      res.json({
+        "errcode": 40009,
+        "errmsg": "处理失败"
+      });
+    }
+  })
+
 
 };
 
@@ -377,17 +526,17 @@ Controller.processUpdate = async function (req, res) {
   // Dealing with Print
   for (const print of req.body.print) {
     console.log("Update Process",print);
-    if (!print.show) { // Delete
+    if (!print.show && print.id) { // Delete
       // if (!print.id) return
       await Model.processPrintDelete(print.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    }else if(print.id) { // Update
+    } else if (print.show && print.id) { // Update
       await Model.processPrintUpdate(print.id, print).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if (print.show && !print.id) { // Add new
       await Model.processPrintCreate(idProduct, print).then((result) => {
         console.log("processPrintCreate :: ", result);
         if (!result.affectedRows) { success = false }
@@ -399,19 +548,19 @@ Controller.processUpdate = async function (req, res) {
   console.log("binding ::::", req.body.binding);
   for (const binding of req.body.binding) {
     // console.log("Update Process", binding);
-    if (!binding.show) { // Delete
+    if (!binding.show && binding.id) { // Delete
       console.log("Delete Process", binding);
       // if (!binding.id) return
       await Model.processBindingDelete(binding.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    } else if (binding.id) { // Update
+    } else if (binding.show && binding.id) { // Update
       console.log("Update Process", binding);
       await Model.processBindingUpdate(binding.id, binding).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if (binding.show && !binding.id) { // Add new
       console.log("Add Process", binding);
       await Model.processBindingCreate(idProduct, binding).then((result) => {
         console.log(result);
@@ -425,19 +574,19 @@ Controller.processUpdate = async function (req, res) {
   // const finishing = req.body.finishing;
   for (const finishing of req.body.finishing) {
     // console.log("Update Process", finishing);
-    if (!finishing.show) { // Delete
+    if (!finishing.show && finishing.id) { // Delete
       console.log("Delete Process", finishing);
       // if (!finishing.id) return
       await Model.processFinishingDelete(finishing.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    } else if (finishing.id) { // Update
+    } else if (finishing.show && finishing.id) { // Update
       console.log("Update Process", finishing);
       await Model.processFinishingUpdate(finishing.id, finishing).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if (finishing.show && !finishing.id) { // Add new
       console.log("Add Process", finishing);
       await Model.processFinishingCreate(idProduct, finishing).then((result) => {
         console.log(result);
@@ -451,19 +600,19 @@ Controller.processUpdate = async function (req, res) {
   // const package = req.body.package;
   for (const package of req.body.package) {
     // console.log("Update Process", Package);
-    if (!package.show) { // Delete
+    if (!package.show && package.id) { // Delete
       console.log("Delete Process", package);
       // if (!package.id) return
       await Model.processPackageDelete(package.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    } else if (package.id) { // Update
+    } else if (package.show && package.id) { // Update
       console.log("Update Process", package);
       await Model.processPackageUpdate(package.id, package).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if (package.show && !package.id) { // Add new
       console.log("Add Process", package);
       await Model.processPackageCreate(idProduct, package).then((result) => {
         console.log(result);
@@ -479,19 +628,19 @@ Controller.processUpdate = async function (req, res) {
   // const delivery = req.body.delivery;
   for (const delivery of req.body.delivery) {
     // console.log("Update Process", delivery);
-    if (!delivery.show) { // Delete
+    if (!delivery.show && delivery.id) { // Delete
       console.log("Delete Process", delivery);
       // if (!delivery.id) return
       await Model.processDeliveryDelete(delivery.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    } else if (delivery.id) { // Update
+    } else if (delivery.show && delivery.id) { // Update
       console.log("Update Process", delivery);
       await Model.processDeliveryUpdate(delivery.id, delivery).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if(delivery.show && !delivery.id) { // Add new
       console.log("Add Process", delivery);
       await Model.processDeliveryCreate(idProduct, delivery).then((result) => {
         console.log(result);
@@ -508,19 +657,19 @@ Controller.processUpdate = async function (req, res) {
   // const Other = req.body.other;
   for (const other of req.body.other) {
     // console.log("Update Process", Other);
-    if (!other.show) { // Delete
+    if (!other.show && other.id) { // Delete
       console.log("Delete Process", other);
       // if (!other.id) return
       await Model.processOtherDelete(other.id).then((result) => {
         if (!result.affectedRows) { success = false }
       })
-    } else if (other.id) { // Update
+    } else if (other.show && other.id) { // Update
       console.log("Update Process", other);
       await Model.processOtherUpdate(other.id, other).then((result) => {
         console.log(result);
         if (!result.affectedRows) { success = false }
       })
-    }else{ // Add new
+    } else if (other.show && !other.id) { // Add new
       console.log("Add Process", other);
       await Model.processOtherCreate(idProduct, other).then((result) => {
         console.log(result);
