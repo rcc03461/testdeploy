@@ -31,7 +31,7 @@ model.findAll = function (option) {
 }
 
 model.findAllCount = function () {
-  let _sql = "SELECT COUNT(id) as total FROM user"
+  let _sql = "SELECT COUNT(idUser) as total FROM user"
   return query(_sql, [])
 }
 

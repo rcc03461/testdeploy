@@ -41,7 +41,7 @@ var indexRouter = {};
 // router.use();
 
 var userController = require('../../../controllers/user');
-var controller = require('../../../controllers/index');
+var controller = require('../../../controllers/controller');
 
 router.post('/users/login', userController.login);
 router.get('/users/logout', userController.logout);
@@ -53,27 +53,31 @@ router.get('/users/', userController.find);
 router.post('/users/', userController.create);
 
 // client
+router.get('/client/detail/:idClient', controller.getClientDetail);
 router.get('/client/list', controller.getClientList);
 router.get('/client/option', controller.getClientOption);
 router.post('/client/create', controller.clientCreate);
-router.put('/client/update/:id', controller.clientUpdate);
-router.get('/client/detail/:idjob', controller.getJobDetail);
+router.put('/client/update/:idClient', controller.clientUpdate);
+// router.get('/client/detail/:idjob', controller.getJobDetail);
 // job
-router.get('/job/detail/:idjob', controller.getJobDetail);
+router.get('/job/detail/:idJob', controller.getJobDetail);
 router.get('/job/list', controller.getJobList);
 router.get('/job/option', controller.getJobOption);
 router.post('/job/create', controller.jobCreate);
-router.put('/job/update/:id', controller.jobUpdate);
+router.put('/job/update/:idJob', controller.jobUpdate);
 // product
 router.get('/product/detail/:id', controller.getProductDetail);
+router.get('/product/details', controller.getProductDetails);
+// router.get('/product/defaults', controller.getProductDefaults);
 router.get('/product/list', controller.getProductList);
 router.post('/product/create', controller.productCreate);
-router.put('/product/update/:id', controller.productUpdate);
+router.put('/product/update/:idProduct', controller.productUpdate);
 // process
-router.get('/process/get/:idproduct', controller.processGetProcess);
+router.get('/process/get/:idProduct', controller.processGetProcess);
 router.post('/process/update', controller.processUpdate);
 // invoice
-router.post('/invoice/getdetail', controller.invoiceGetDetail);
+router.post('/invoice/getdetail', controller.getInvoice);
+router.post('/invoice/save', controller.invoiceSave);
 
 
 

@@ -1,16 +1,16 @@
 const mysql = require('mysql2')
+// const pool = mysql.createPool({
+//   user: 'ychinghk_cre8',
+//   password: 'kEumShD67KST63F',
+//   database: 'ychinghk_cre8',
+//   host: 'yching.hk',
+// })
 const pool = mysql.createPool({
   user: 'root',
-  password: 'hing8808',
+  password: '',
   database: 'cre',
   host: 'localhost',
 })
-// const pool = mysql.createPool({
-//   user: 'root',
-//   password: '',
-//   database: 'cre',
-//   host: 'localhost',
-// })
 
 
 const query = function (sql, values) {

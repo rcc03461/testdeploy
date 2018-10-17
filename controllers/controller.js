@@ -4,7 +4,7 @@
  * Created by jerry on 2017/11/2.
  */
 
-const Model = require('../data/index');
+const Model = require('../data/model');
 var dayjs = require('dayjs');
 let Controller = {};
 // let Model = Client;
@@ -19,18 +19,153 @@ Controller.invoiceGetDetail = async function (req, res) {
 
   // let page = parseInt(req.query.page || 1); //页码（默认第1页）
   // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
-  let option = req.body;
-  console.log("invoice :::::", req.body);
-  const products = await Model.invoiceGetDetail(option).then(list => {
-      // return list
-      console.log(list);
+  let productIds = req.body.products;
+  let idJob = req.body.idjob;
+  let products = [];
+  for (const idProduct of productIds) {
+    let productDetail = {};
+    console.log("query Id",idProduct);
+    productDetail['detail'] = await Model.getProductDetail(idProduct).then(e=>{
+      if (e) {
+        return e[0]
+      }
+    });
+    productDetail['print'] = await Model.invoiceGetProductDetail("detail_print", idProduct);
+    productDetail['binding'] = await Model.invoiceGetProductDetail("detail_binding", idProduct);
+    productDetail['package'] = await Model.invoiceGetProductDetail("detail_package", idProduct);
+    productDetail['delivery'] = await Model.invoiceGetProductDetail("detail_delivery", idProduct);
+    productDetail['finishing'] = await Model.invoiceGetProductDetail("detail_finishing", idProduct);
+    productDetail['other'] = await Model.invoiceGetProductDetail("detail_other", idProduct);
+    products.push(productDetail)
+  }
+  console.log("inv : P",products);
+  
+  res.json(products)
+  // console.log("invoice :::::", req.body);
+  // await Model.invoiceGetProductDetail("", )
+  // const products = await Model.invoiceGetDetail(option).then(list => {
+  //     // return list
+  //     console.log(list);
       
-      res.json(list)
+  //     res.json(list)
+  // });
+
+};
+Controller.getInvoice = async function (req, res) {
+
+  // let page = parseInt(req.query.page || 1); //页码（默认第1页）
+  // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
+  let idJob = req.body.idJob;
+  const clientDetail = await Model.getJobClient(idJob).then(rawData =>{
+    rawData[0].jobSetting = JSON.parse(rawData[0].jobSetting);
+    return rawData[0]
   });
 
+  const products = await Model.getJobProduct(idJob).then(rawData => {
+    rawData.forEach(element => {
+      element.productSetting = JSON.parse(element.productSetting)
+      element.jobSetting = JSON.parse(element.jobSetting)
+    });
+    return rawData
+  });
 
+  res.json({
+    clientDetail: clientDetail,
+    products:products
+  })
+  // await Model.getInvoice(idJob).then(async function(e){
+  //   console.log("getJobDetail:", idJob , e);
+  //   if( e ){
+  //     let jobDetail = e[0];
+  //   }else{
+      
+
+
+  //   }
+  // })
+
+  // console.log("inv : P", idJob);
   
+
+
 };
+Controller.compareSetting = function (upper, lower) {
+  lower.map(e=>{
+    e.map(f=>{
+      if (!f) {
+        delete f
+      }
+    })
+  })
+  return {...upper, ...lower}
+}
+Controller.invoiceSave = async function (req, res) {
+
+  // let page = parseInt(req.query.page || 1); //页码（默认第1页）
+  // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
+  let productIds = req.body.products;
+  let idJob = req.body.idjob;
+  let products = [];
+  for (const idProduct of productIds) {
+    let productDetail = {};
+    console.log("query Id",idProduct);
+    productDetail['detail'] = await Model.getProductDetail(idProduct).then(e=>{
+      if (e) {
+        return e[0]
+      }
+    });
+    productDetail['print'] = await Model.invoiceGetProductDetail("detail_print", idProduct);
+    productDetail['binding'] = await Model.invoiceGetProductDetail("detail_binding", idProduct);
+    productDetail['package'] = await Model.invoiceGetProductDetail("detail_package", idProduct);
+    productDetail['delivery'] = await Model.invoiceGetProductDetail("detail_delivery", idProduct);
+    productDetail['finishing'] = await Model.invoiceGetProductDetail("detail_finishing", idProduct);
+    productDetail['other'] = await Model.invoiceGetProductDetail("detail_other", idProduct);
+    products.push(productDetail)
+  }
+  console.log("inv : P",products);
+  
+  res.json(products)
+  // console.log("invoice :::::", req.body);
+  // await Model.invoiceGetProductDetail("", )
+  // const products = await Model.invoiceGetDetail(option).then(list => {
+  //     // return list
+  //     console.log(list);
+      
+  //     res.json(list)
+  // });
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Controller.getClientDetail = async function (req, res) {
+
+  let idClient = _.trim(req.params.idClient || '');
+
+  await Model.getClientDetail(idClient).then(async (list) => {
+      res.json(list[0])
+  }).catch(err=>{
+    res.json({
+        "errcode": 40009,
+        "errmsg": "Fails to get client list"
+    })
+  });
+
+};
+
 
 Controller.getClientList = async function (req, res) {
 
@@ -78,11 +213,11 @@ Controller.clientCreate = async function (req, res) {
   await Model.clientCreate({
     clientCode: req.body.clientCode,
     clientName: req.body.clientName,
-    attn: req.body.attn || '',
-    clientMail: req.body.clientMail || '',
-    billingAddress: req.body.billingAddress || ''
+    attn: req.body.attn || null,
+    clientMail: req.body.clientMail || null,
+    billingAddress: req.body.billingAddress || null
   }).then(result => {
-    console.log(result);
+    // console.log(result);
     
     if (result.affectedRows >= 1) {
       res.json({
@@ -95,6 +230,12 @@ Controller.clientCreate = async function (req, res) {
         "errmsg": "处理失败"
       })
     }
+  }).catch(error =>{
+    console.log(error);
+    res.json({
+      "errcode": 0,
+      "errmsg": error
+    })
   });
   // const result = JSON.parse(JSON.stringify(rawData))
   // console.log(JSON.parse(JSON.stringify(queryResult)));
@@ -103,8 +244,8 @@ Controller.clientCreate = async function (req, res) {
 
 Controller.clientUpdate = async function (req, res) {
 
-  let id = _.trim(req.params.id || '');
-  if (!id) {
+  let idClient = _.trim(req.params.idClient || '');
+  if (!idClient) {
     return res.json({
       "errcode": 40002,
       "errmsg": "不合法的参数"
@@ -113,10 +254,10 @@ Controller.clientUpdate = async function (req, res) {
   await Model.clientUpdate({
     clientCode: req.body.clientCode,
     clientName: req.body.clientName,
-    attn: req.body.attn,
-    clientMail: req.body.clientMail,
-    billingAddress: req.body.billingAddress,
-    id: id
+    attn: req.body.attn || null,
+    clientMail: req.body.clientMail || null,
+    billingAddress: req.body.billingAddress || null,
+    idClient: idClient
   }).then(result => {
     if (result.affectedRows >= 1) {
       res.json({
@@ -141,10 +282,11 @@ Controller.clientUpdate = async function (req, res) {
 Controller.getJobDetail = async function (req, res) {
   // let page = parseInt(req.query.page || 1); //页码（默认第1页）
   // let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
-  const idjob = req.params.idjob;
-  await Model.getJobDetail(idjob).then(async (rawData) => {
+  const idJob = req.params.idJob;
+  await Model.getJobDetail(idJob).then(async (rawData) => {
     
     let list = rawData.map(e => {
+      e.jobSetting = JSON.parse(e.jobSetting);
       e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
       // e.deliverySchedule = dayjs(e.deliverySchedule).format('YYYY-MM-DD');
       e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
@@ -167,6 +309,7 @@ Controller.getJobList = async function (req, res) {
   }).then(async (rawData) => {
     
     let list = rawData.map(e => {
+      e.jobSetting = JSON.parse(e.jobSetting);
       e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
       e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
       return e
@@ -180,6 +323,11 @@ Controller.getJobList = async function (req, res) {
         list: list
       })
     });
+  }).catch(error=>{
+    console.log("Controller.getJobList Error", error);
+    res.json({
+      msg: error
+    })
   });
   
 };
@@ -198,41 +346,42 @@ Controller.getJobOption = async function (req, res) {
 
 Controller.jobCreate = async function (req, res) {
 
-  console.log("jobCreate ", req.body);
+  // console.log("jobCreate ", req.body);
 
   // res.json({
   //   "errcode": 40009,
   //   "errmsg": "处理失败"
   // })
   await Model.jobCreate({
-    jobTitle: req.body.jobTitle || '',
-    noPerPackage: req.body.noPerPackage || '',
-    dealDate: req.body.dealDate || '',
-    deliverySchedule: req.body.deliverySchedule || '',
+    jobTitle: req.body.jobTitle,
+    noPerPackage: req.body.noPerPackage || null,
+    dealDate: req.body.dealDate || null,
+    deliverySchedule: req.body.deliverySchedule || null,
+    jobSetting: req.body.jobSetting || null,
     idClient: req.body.idClient || 0,
     createId: req.body.createId || 0
   }).then(async result => {
 
-    console.log("jobCreate resule : ", result.insertId);
+    // console.log("jobCreate resule : ", result.insertId);
     
-    await Model.jobAddDefaultSetting({
-            idJob: result.insertId,
-            size: req.body.size || null,
-            color: req.body.color || null,
-            material: req.body.material || null,
-            materialWeight: req.body.materialWeight || null,
-            qty: req.body.qty || null,
-            pageCount: req.body.pageCount || null,
-            binding: req.body.binding || null,
-            pagination: req.body.pagination || null,
-            unitPrice: req.body.unitPrice || null,
-            amount: req.body.amount || null,
-            sample: req.body.sample || null,
-            finishing: req.body.finishing || null,
-            specialInstruction: req.body.specialInstruction || null
-    }).then(setting=>{
-      console.log("affectedRows :", setting.affectedRows);
-    })
+    // await Model.jobAddDefaultSetting({
+    //         idJob: result.insertId,
+    //         size: req.body.size || null,
+    //         color: req.body.color || null,
+    //         material: req.body.material || null,
+    //         materialWeight: req.body.materialWeight || null,
+    //         qty: req.body.qty || null,
+    //         pageCount: req.body.pageCount || null,
+    //         binding: req.body.binding || null,
+    //         pagination: req.body.pagination || null,
+    //         unitPrice: req.body.unitPrice || null,
+    //         amount: req.body.amount || null,
+    //         sample: req.body.sample || null,
+    //         finishing: req.body.finishing || null,
+    //         specialInstruction: req.body.specialInstruction || null
+    // }).then(setting=>{
+    //   console.log("affectedRows :", setting.affectedRows);
+    // })
 
     if (result.affectedRows) {
       res.json({
@@ -253,86 +402,125 @@ Controller.jobUpdate = async function (req, res) {
   // console.log("jobUpdate id:", req.params.id, req.body.jobTitle);
   
 
-  let id = _.trim(req.params.id || '');
-  console.log(id);
+  let idJob = _.trim(req.params.idJob || '');
   
-  if (!id) {
+  if (!idJob) {
     return res.json({
       "errcode": 40002,
       "errmsg": "不合法的参数"
     });
   }
+  console.log(req.body);
+
   await Model.jobUpdate({
     jobTitle: req.body.jobTitle,
     noPerPackage: req.body.noPerPackage || null,
     dealDate: req.body.dealDate || null,
     deliverySchedule: req.body.deliverySchedule || null,
-    id: id
-  }).then(async result => {
-
-    console.log("jobUpdate data:::", req.body);
+    specialInstruction: req.body.specialInstruction || null,
+    jobSetting: req.body.jobSetting || null,
+    idJob: idJob
+  }).then(result => {
+    console.log(result);
+    
+    // console.log("jobUpdate data:::", req.body);
       
-    await Model.jobEditDefaultSetting({
-      idDefaultJob: req.body.idDefaultJob,
-      size: req.body.size || null,
-      color: req.body.color || null,
-      material: req.body.material || null,
-      materialWeight: req.body.materialWeight || null,
-      qty: req.body.qty || null,
-      pageCount: req.body.pageCount || null,
-      binding: req.body.binding || null,
-      pagination: req.body.pagination || null,
-      unitPrice: req.body.unitPrice || null,
-      amount: req.body.amount || null,
-      sample: req.body.sample || null,
-      finishing: req.body.finishing || null,
-      specialInstruction: req.body.specialInstruction || null
-    }).then(setting => {
-      console.log("affectedRows :", setting.affectedRows);
-    })
+    // await Model.jobEditDefaultSetting({
+    //   idDefaultJob: req.body.idDefaultJob,
+    //   size: req.body.size || null,
+    //   color: req.body.color || null,
+    //   material: req.body.material || null,
+    //   materialWeight: req.body.materialWeight || null,
+    //   qty: req.body.qty || null,
+    //   pageCount: req.body.pageCount || null,
+    //   binding: req.body.binding || null,
+    //   pagination: req.body.pagination || null,
+    //   unitPrice: req.body.unitPrice || null,
+    //   amount: req.body.amount || null,
+    //   sample: req.body.sample || null,
+    //   finishing: req.body.finishing || null,
+    //   specialInstruction: req.body.specialInstruction || null
+    // }).then(setting => {
+    //   console.log("affectedRows :", setting.affectedRows);
+    // })
 
     if (result.affectedRows >= 1) {
       res.json({
         "errcode": 0,
-        "errmsg": "修改成功"
+        "errmsg": "jobUpdate修改成功"
       });
     } else {
       res.json({
         "errcode": 40009,
-        "errmsg": "处理失败"
+        "errmsg": "jobUpdate处理失败"
       });
     }
-  })
+  }).catch(error=>{
+    console.log(error)
+  });
   
 };
 
 // =========================== Product ====================
 
+Controller.getProductDefaults = async function (req, res) {
+  // console.log("getProductDefaults : ", req.body);
+  console.log("getProductDefaults : ", req.query);
+  let productIds = req.query;
+  // let id = parseInt(req.params.id || 0);
+  let product = await Model.getProductDefaults(productIds);
+  res.json(product)
+};
+
+Controller.getProductDetails = async function (req, res) {
+  let ids = req.query;
+  console.log("ids S", Object.values(ids));
+  
+  await Model.getProductDetails( Object.values(ids) ).then(rawData => {
+    console.log("getProductDetails : ", rawData);
+    let list = rawData.map(e => {
+      e.productSetting = JSON.parse(e.productSetting);
+      e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
+      e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
+      return e
+    })
+    res.json(list)
+  })
+};
+
 Controller.getProductDetail = async function (req, res) {
   let id = parseInt(req.params.id || 0);
   await Model.getProductDetail(id).then(rawData => {
-      res.json(rawData[0])
+    let list = rawData.map(e => {
+      e.productSetting = JSON.parse(e.productSetting);
+      e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
+      e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
+      return e
+    })
+    res.json(list[0])
   })
-
 };
 
+
 Controller.getProductList = async function (req, res) {
-  let idjob = parseInt(req.query.idjob || 0); //页码（默认第1页）
+  let idJob = parseInt(req.query.idJob || 0); //页码（默认第1页）
   let page = parseInt(req.query.page || 1); //页码（默认第1页）
   let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
 
-  let option = idjob ? { idjob: idjob } : {};
+  let option = idJob ? { idJob: idJob } : {};
 
   option =  _.merge(option, {
     page: page,
     limit: limit,
   });
+  console.log("Controller.getProductList option:", option);
   
   await Model.getProductList(option).then(async (rawData) => {
 
     console.log("getProductList : ", rawData);
     
     let list = rawData.map(e => {
+      e.productSetting = JSON.parse(e.productSetting);
       e.dealDate = dayjs(e.dealDate).format('YYYY-MM-DD');
       e.createdAt = dayjs(e.createdAt).format('YYYY-MM-DD');
       return e
@@ -353,9 +541,9 @@ Controller.getProductList = async function (req, res) {
 
 Controller.productCreate = async function (req, res) {
 
-  let idJob = req.body.idJob || '';
-  let createId = req.body.createId || '';
-  let productName = req.body.productName || '';
+  let idJob = req.body.idJob;
+  let createId = req.body.createId;
+  // let productName = req.body.productName || null;
 
   // console.log("productCreate ::: ", req.body);
   // res.json({
@@ -366,26 +554,29 @@ Controller.productCreate = async function (req, res) {
   console.log("productCreate data::", req.body);
   
 
-  await Model.productCreate(idJob, productName, createId).then(async result => {
+  await Model.productCreate(idJob, {
+      productName : req.body.productName,
+      productSetting: req.body.productSetting,
+    }, createId).then(async result => {
 
-    await Model.productAddDefaultSetting({
-      idProduct: result.insertId,
-      size: req.body.size || null,
-      color: req.body.color || null,
-      material: req.body.material || null,
-      materialWeight: req.body.materialWeight || null,
-      qty: req.body.qty || null,
-      pageCount: req.body.pageCount || null,
-      binding: req.body.binding || null,
-      pagination: req.body.pagination || null,
-      unitPrice: req.body.unitPrice || null,
-      amount: req.body.amount || null,
-      sample: req.body.sample || null,
-      finishing: req.body.finishing || null,
-      specialInstruction: req.body.specialInstruction || null
-    }).then(setting=>{
-      console.log(" productAddDefaultSetting : ", setting.affectedRows);
-    })
+    // await Model.productAddDefaultSetting({
+    //   idProduct: result.insertId,
+    //   size: req.body.size || null,
+    //   color: req.body.color || null,
+    //   material: req.body.material || null,
+    //   materialWeight: req.body.materialWeight || null,
+    //   qty: req.body.qty || null,
+    //   pageCount: req.body.pageCount || null,
+    //   binding: req.body.binding || null,
+    //   pagination: req.body.pagination || null,
+    //   unitPrice: req.body.unitPrice || null,
+    //   amount: req.body.amount || null,
+    //   sample: req.body.sample || null,
+    //   finishing: req.body.finishing || null,
+    //   specialInstruction: req.body.specialInstruction || null
+    // }).then(setting=>{
+    //   console.log(" productAddDefaultSetting : ", setting.affectedRows);
+    // })
 
 
     if (result.affectedRows) {
@@ -405,10 +596,10 @@ Controller.productCreate = async function (req, res) {
 
 Controller.productUpdate = async function (req, res) {
 
-  let id = _.trim(req.params.id || '');
-  console.log("productUpdate ", id);
+  let idProduct = _.trim(req.params.idProduct || '');
+  console.log("productUpdate ", idProduct);
 
-  if (!id) {
+  if (!idProduct) {
     return res.json({
       "errcode": 40002,
       "errmsg": "不合法的参数"
@@ -419,32 +610,34 @@ Controller.productUpdate = async function (req, res) {
   await Model.productUpdate({
     idJob: req.body.idJob,
     productName: req.body.productName,
+    productSetting: req.body.productSetting,
     // noPerPackage: req.body.noPerPackage || null,
     // dealDate: req.body.dealDate || null,
     // deliverySchedule: req.body.deliverySchedule || null,
-    id: id
+    idProduct: req.body.idProduct,
+    // idProduct: idProduct
   }).then(async result => {
 
   //   console.log("productUpdate data:::", req.body);
 
-    await Model.productEditDefaultSetting({
-      idDefaultProduct: req.body.idDefaultProduct,
-      size: req.body.size || null,
-      color: req.body.color || null,
-      material: req.body.material || null,
-      materialWeight: req.body.materialWeight || null,
-      qty: Number(req.body.qty) || null,
-      pageCount: req.body.pageCount || null,
-      binding: req.body.binding || null,
-      pagination: req.body.pagination || null,
-      unitPrice: Number(req.body.unitPrice) || null,
-      amount: Number(req.body.amount) || null,
-      sample: req.body.sample || null,
-      finishing: req.body.finishing || null,
-      specialInstruction: req.body.specialInstruction || null
-    }).then(setting => {
-      console.log("affectedRows :", setting.affectedRows);
-    })
+    // await Model.productEditDefaultSetting({
+    //   idDefaultProduct: req.body.idDefaultProduct,
+    //   size: req.body.size || null,
+    //   color: req.body.color || null,
+    //   material: req.body.material || null,
+    //   materialWeight: req.body.materialWeight || null,
+    //   qty: Number(req.body.qty) || null,
+    //   pageCount: req.body.pageCount || null,
+    //   binding: req.body.binding || null,
+    //   pagination: req.body.pagination || null,
+    //   unitPrice: Number(req.body.unitPrice) || null,
+    //   amount: Number(req.body.amount) || null,
+    //   sample: req.body.sample || null,
+    //   finishing: req.body.finishing || null,
+    //   specialInstruction: req.body.specialInstruction || null
+    // }).then(setting => {
+    //   console.log("affectedRows :", setting.affectedRows);
+    // })
 
     if (result.affectedRows >= 1) {
       res.json({
@@ -469,7 +662,7 @@ Controller.productUpdate = async function (req, res) {
 
 Controller.processGetProcess = async function (req, res) {
   // console.log(req.params.idproduct);
-  const idProduct = req.params.idproduct;
+  const idProduct = req.params.idProduct;
   console.log(idProduct);
   const print = await Model.processPrintGet(idProduct).then((result) => {
     console.log('get print: ', result);
