@@ -5,18 +5,18 @@ const mysql = require('mysql2')
 //   database: 'ychinghk_cre8',
 //   host: 'yching.hk',
 // })
-// const pool = mysql.createPool({
-//   user: 'root',
-//   password: 'hing8808',
-//   database: 'cre',
-//   host: 'localhost',
-// })
 const pool = mysql.createPool({
   user: 'root',
-  password: '',
+  password: 'hing8808',
   database: 'cre',
   host: 'localhost',
 })
+// const pool = mysql.createPool({
+//   user: 'root',
+//   password: '',
+//   database: 'cre',
+//   host: 'localhost',
+// })
 
 
 const query = function (sql, values) {
