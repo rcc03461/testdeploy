@@ -5,7 +5,7 @@ var express = require('express');
 var router = express();
 
 var cors = require('cors');
-var whitelist = ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'];
+var whitelist = ['http://localhost:8081', 'http://cre.yching.hk', 'http://35.201.238.22'];
 const corsOptions = {
   // origin: function (origin, callback) {
   //   if (whitelist.indexOf(origin) !== -1) {
@@ -14,7 +14,7 @@ const corsOptions = {
   //     callback(new Error('Not allowed by CORS'))
   //   }
   // },
-  origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://104.155.212.227'],
+  origin: ['http://localhost:8081', 'http://cre.yching.hk', 'http://35.201.238.22'],
   credentials: true,
   methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
   // allowedHeaders: ['Content-Type', 'Authorization'],
