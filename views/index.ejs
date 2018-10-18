@@ -22,7 +22,7 @@
     <!--内容区-->
     <div class="row main-content">
         <!--左-->
-        <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="col-md-12 col-sm-12 col-xs-12" style="display:none">
           <h3>提供了如下restful风格接口：</h3>
           <h4>用户登录：POST /api/v1/users/login</h4>
           <h4>用户退出：GET /api/v1/users/logout</h4>
@@ -35,6 +35,46 @@
           <h4>修改一条图书信息：PUT /api/v1/books/:id</h4>
           <h4>删除一条图书信息：DELETE /api/v1/books/:id</h4>
           <h4>批量删除图片信息：DELETE /api/v1/books/batch/:ids</h4>
+          
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <h3>restful：</h3>
+            router.post('/users/login', userController.login);<br>
+            router.get('/users/logout', userController.logout);<br>
+//先检查登录<br>
+            // router.use(userController.checkLogin);<br>
+            router.patch('/users/profile', userController.profile);<br>
+            router.patch('/users/changepwd', userController.changepwd);<br>
+            router.get('/users/', userController.find);<br>
+            router.post('/users/', userController.create);<br>
+
+// client<br>
+            router.get('/client/detail/:idClient', controller.getClientDetail);<br>
+            router.get('/client/list', controller.getClientList);<br>
+            router.get('/client/option', controller.getClientOption);<br>
+            router.post('/client/create', controller.clientCreate);<br>
+            router.put('/client/update/:idClient', controller.clientUpdate);<br>
+            // router.get('/client/detail/:idjob', controller.getJobDetail);<br>
+// job<br>
+            router.get('/job/detail/:idJob', controller.getJobDetail);<br>
+            router.get('/job/list', controller.getJobList);<br>
+            router.get('/job/option', controller.getJobOption);<br>
+            router.post('/job/create', controller.jobCreate);<br>
+            router.put('/job/update/:idJob', controller.jobUpdate);<br>
+// product<br>
+            router.get('/product/detail/:id', controller.getProductDetail);<br>
+            router.get('/product/details', controller.getProductDetails);<br>
+            // router.get('/product/defaults', controller.getProductDefaults);<br>
+            router.get('/product/list', controller.getProductList);<br>
+            router.post('/product/create', controller.productCreate);<br>
+            router.put('/product/update/:idProduct', controller.productUpdate);<br>
+// process<br>
+            router.get('/process/get/:idProduct', controller.processGetProcess);<br>
+            router.post('/process/update', controller.processUpdate);<br>
+// invoice<br>
+            router.post('/invoice/getdetail', controller.getInvoice);<br>
+            router.post('/invoice/save', controller.invoiceSave);<br>
+          
         </div>
     </div>
 
