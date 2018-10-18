@@ -34,7 +34,8 @@ userController.login = async function (req, res) {
   if (!username || !pwd) {
     return res.json({"errcode": 40002, "errmsg": "不合法的参数"});
   }
-
+  
+  
   // 通过用户名获取到用户信息
   // let user = _.find(_Users, function (u) {
   //   return u.username === username;
@@ -47,10 +48,11 @@ userController.login = async function (req, res) {
   }
   if (user[0].password === pwd) {
     //设置session
-    req.session.userId = user[0].id;
+    console.log(user, pwd);
+    req.session.userId = user[0].idUser;
 
     return res.json({
-      id: user[0].id,
+      idUser: user[0].idUser,
       username: user[0].username,
       email: user[0].email,
       permission: user[0].permission,
